@@ -50,8 +50,10 @@ func exibirPrompt(label string) int {
 }
 
 func exibirMenu() {
-	fmt.Println("Seleciona a opção:")
-	fmt.Println(" 1) Exibir merge requests")
+	fmt.Println("Selecione a opção:")
+	fmt.Println(" 1) Listar MRs abertos com comentários")
+	fmt.Println(" 2) Listar MRs abertos")
+	fmt.Println(" 3) Exibir todos MRs")
 	fmt.Println(" 9) Sair")
 	fmt.Println("")
 }
@@ -59,11 +61,15 @@ func exibirMenu() {
 func executarComando(opcao int) {
 	switch opcao {
 	case 1:
-		cmd.ListarMergeRequest(env.UrlApi, env.Token)
+		cmd.ListarMergeRequest(env.UrlApi, env.Token, "opened", 0)
+	case 2:
+		cmd.ListarMergeRequest(env.UrlApi, env.Token, "opened", -1)
+	case 3:
+		cmd.ListarMergeRequest(env.UrlApi, env.Token, "all", -1)
 	case 9:
 		fmt.Println("Falou campeão!")
 	default:
-		fmt.Printf("Não existe a opção %v!\n.", opcao)
+		fmt.Printf("Opção inválida: %v\n.", opcao)
 	}
 }
 func validar(input string) error {

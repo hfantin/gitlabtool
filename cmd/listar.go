@@ -9,32 +9,14 @@ import (
 	"regexp"
 )
 
-var (
-	Normal = Teal
-	Debug  = Green
-	Info   = Teal
-	Warn   = Yellow
-	Fata   = Red
-)
-
-var (
-	Black   = Color("\033[1;30m%s\033[0m")
-	Red     = Color("\033[1;31m%s\033[0m")
-	Green   = Color("\033[1;32m%s\033[0m")
-	Yellow  = Color("\033[1;33m%s\033[0m")
-	Purple  = Color("\033[1;34m%s\033[0m")
-	Magenta = Color("\033[1;35m%s\033[0m")
-	Teal    = Color("\033[1;36m%s\033[0m")
-	White   = Color("\033[1;37m%s\033[0m")
-)
-
-func Color(colorString string) func(...interface{}) string {
-	sprint := func(args ...interface{}) string {
-		return fmt.Sprintf(colorString,
-			fmt.Sprint(args...))
-	}
-	return sprint
-}
+// 	Black   = Color("\033[1;30m%s\033[0m")
+// 	Red     = Color("\033[1;31m%s\033[0m")
+// 	Green   = Color("\033[1;32m%s\033[0m")
+// 	Yellow  = Color("\033[1;33m%s\033[0m")
+// 	Purple  = Color("\033[1;34m%s\033[0m")
+// 	Magenta = Color("\033[1;35m%s\033[0m")
+// 	Teal    = Color("\033[1;36m%s\033[0m")
+// 	White   = Color("\033[1;37m%s\033[0m")
 
 type MergeRequest struct {
 	State          string `json:"state"`
@@ -43,10 +25,14 @@ type MergeRequest struct {
 	WebUrl         string `json:"web_url"`
 }
 
-func ListarMergeRequest(urlApi, token string) {
+func ListarMergeRequest(urlApi, token, state string, minComents int) {
 	// endpoint := fmt.Sprintf("%s%s", urlApi, "/projects/mov%2fmov-react-native/merge_requests?state=opened")
-	endpoint := fmt.Sprintf("%s/%s", urlApi, "merge_requests")
-	fmt.Println("endpoint ", endpoint)
+	stateQuery := ""
+	if len(state) > 0 {
+		stateQuery = fmt.Sprintf("?state=%s", state)
+	}
+	endpoint := fmt.Sprintf("%s/%s%s", urlApi, "merge_requests", stateQuery)
+	fmt.Println("endpoint", endpoint)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
@@ -74,26 +60,28 @@ func ListarMergeRequest(urlApi, token string) {
 			return
 		}
 		r := regexp.MustCompile(`^https:\/\/.*.intranet.bb.com.br\/(.{3})\/([a-zA-Z-]*)`)
-		for i := 0; i < len(data); i++ {
-			match := r.FindStringSubmatch(data[i].WebUrl)
+		found := false
+		for _, mr := range data {
+			match := r.FindStringSubmatch(mr.WebUrl)
 			projeto := ""
 			if len(match) == 3 {
 				projeto = match[2]
 			}
-			if data[i].State == "opened" && data[i].UserNotesCount > 0 {
-				// const (
-				// 	InfoColor    = "\033[1;34m%s\033[0m"
-				// 	NoticeColor  = "\033[1;36m%s\033[0m"
-				// 	WarningColor = "\033[1;33m%s\033[0m"
-				// 	ErrorColor   = "\033[1;31m%s\033[0m"
-				// 	DebugColor   = "\033[0;36m%s\033[0m"
-				// )
-
-				fmt.Println(Debug("["+projeto+"]"), "MR: "+data[i].Title, data[i].Title, Normal("["+data[i].WebUrl+"]"))
+			if mr.UserNotesCount > minComents {
+				fmt.Print(fmt.Sprintf("\033[1;32m[%s]\033[0m ", projeto))
+				if state != "opened" {
+					fmt.Print(fmt.Sprintf("\033[1;33m%s\033[0m ", mr.State))
+				}
+				fmt.Print(fmt.Sprintf("MR: %s ", mr.Title))
+				fmt.Println(fmt.Sprintf("\033[1;36m[%s]\033[0m", mr.WebUrl))
+				found = true
 			}
+		}
+		if !found {
+			fmt.Println("Nenhum Merge Request encontrado.")
 		}
 
 	} else {
-		fmt.Printf("falha: %s\n", string(body))
+		fmt.Printf("Não foi possível obter a lista de MRs: %s\n", string(body))
 	}
 }
