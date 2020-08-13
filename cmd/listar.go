@@ -32,7 +32,6 @@ func ListarMergeRequest(urlApi, token, state string, minComents int) {
 		stateQuery = fmt.Sprintf("?state=%s", state)
 	}
 	endpoint := fmt.Sprintf("%s/%s%s", urlApi, "merge_requests", stateQuery)
-	fmt.Println("endpoint", endpoint)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
