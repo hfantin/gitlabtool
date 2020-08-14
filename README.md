@@ -15,9 +15,3 @@
 > gitlab_url_api   
 - Execute: 
 > ./bin/gitlabtool   
-
-
-
-
-### Version
-<span style="background-color:green">v1.0.0</span>
