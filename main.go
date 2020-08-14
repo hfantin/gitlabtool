@@ -19,16 +19,26 @@ type Env struct {
 var env *Env
 
 func main() {
-	// Load dotenv
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("arquivo .env não encontrado")
-		os.Exit(1)
-	}
-	env = &Env{Token: os.Getenv("gitlab_access_token"), UrlApi: os.Getenv("gitlab_url_api")}
+	loadEnv()
 	exibirMenu()
 	opcao := exibirPrompt("Opção")
 	executarComando(opcao)
+}
+
+func loadEnv() {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Arquivo .env não encontrado")
+	}
+	env = &Env{Token: os.Getenv("gitlab_access_token"), UrlApi: os.Getenv("gitlab_url_api")}
+	if env.Token == "" {
+		fmt.Println("Token não encontrado, favor configurar a variavel gitlab_access_token .env ou no ambiente.")
+		os.Exit(1)
+	}
+	if env.UrlApi == "" {
+		fmt.Println("Url da api não encontrado, favor configurar a variavel gitlab_url_api no arquivo .env ou no ambiente.")
+		os.Exit(1)
+	}
 }
 
 func exibirPrompt(label string) int {
