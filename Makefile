@@ -1,9 +1,9 @@
 APP_NAME:=gitlabtool
 
-all: clean update build-all
+all: clean update test build-all
 
 clean: 
-	rm bin/*
+	rm -f bin/*
 
 update: 
 	go get -u
