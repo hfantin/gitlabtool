@@ -3,7 +3,7 @@
 - Simple tool to list all user merge requests, using gitlab api:
 > GET /merge_requests
 
-![menu](https://github.com/hfantin/gitlabtool/.images/gitlabtool.png)
+![menu](.images/gitlabtool.png)
 
 
 ### Compiling and Running
