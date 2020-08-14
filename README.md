@@ -15,3 +15,9 @@
 > gitlab_url_api   
 - Execute: 
 > ./bin/gitlabtool   
+
+
+
+
+### badge test
+<span style="color:blue">v1.0.0</span>
