@@ -1,6 +1,6 @@
 # Git Lab Tool
 
-- Simple tool to user's merge requests using gitlab api:
+- Simple tool to list user's merge requests using gitlab api:
 > GET /merge_requests
 
 ![menu](.images/gitlabtool.png)
